@@ -1004,7 +1004,6 @@ impl List {
         self.selected_package_state = Some(PackageState::Enabled);
         self.selected_list = Some(UadList::All);
         self.selected_user = Some(User::default());
-        self.fallback_notifications.clear();
         Self::filter_package_lists(self);
         self.loading_state = LoadingState::Ready;
         Task::none()
@@ -1934,6 +1933,10 @@ mod tests {
         assert_eq!(view.error_modal.as_deref(), Some("refused"));
         assert_eq!(view.phone_packages[0][1].state, PackageState::Enabled);
         assert_eq!(view.selected_packages, [(0, 2)]);
+
+        // They are still listed once the packages of the other device are loaded.
+        let _ = view.on_apply_filters("other", vec![vec![], vec![]], &other);
+        assert_eq!(view.fallback_notifications.len(), 2);
     }
 
     #[test]
